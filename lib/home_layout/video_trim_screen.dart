@@ -7,7 +7,7 @@ class VideoTrimScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<AppCubit, AppStates>(
       listener: (context, state) {
-        // TODO: implement listener
+
       },
       builder: (context, state) {
         return Scaffold(
