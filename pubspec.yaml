@@ -49,6 +49,8 @@ dev_dependencies:
   receive_sharing_intent: ^1.8.1
   ffmpeg_kit_flutter: ^6.0.3
   permission_handler: ^11.3.1
+  bloc: ^8.1.4
+  flutter_bloc: ^8.1.6
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
