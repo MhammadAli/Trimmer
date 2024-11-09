@@ -1,7 +1,4 @@
 import 'dart:async';
-import 'package:bloc/bloc.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:meta/meta.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io'; // Import for File and Directory checks
 import 'package:flutter/material.dart';
@@ -9,6 +6,7 @@ import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 part 'app_state.dart';
 
@@ -17,19 +15,23 @@ class AppCubit extends Cubit<AppStates> {
 
   static AppCubit get(context) => BlocProvider.of(context);
 
-  var sharedVideoPath = TextEditingController();
+  final sharedVideoPath = TextEditingController();
   late StreamSubscription _intentDataStreamSubscription;
   final List<SharedMediaFile> _sharedFiles = [];
   Duration totalVideoDuration = Duration.zero;
 
-  // Segment duration dropdown
-  int _selectedSegmentDuration = 1; // default duration in minutes
-  final List<int> _segmentDurations = [
-    1,
-    2,
-    5,
-    10,
-  ]; // available options in minutes
+  // Dropdown data structure with platform icons and durations
+  final List<Map<String, dynamic>> segmentDurations = [
+    {'name': 'WhatsApp', 'icon': FontAwesomeIcons.whatsapp, 'duration': const Duration(minutes: 1)},
+    {'name': 'Messenger', 'icon': FontAwesomeIcons.facebookMessenger, 'duration': const Duration(seconds: 20)},
+    {'name': 'YouTube', 'icon': FontAwesomeIcons.youtube, 'duration': const Duration(minutes: 3)},
+    {'name': 'TikTok', 'icon': FontAwesomeIcons.tiktok, 'duration': const Duration(minutes: 10)},
+    {'name': 'Custom', 'icon': Icons.settings, 'duration': const Duration(minutes: 2)}, // Default custom duration
+  ];
+
+  int selectedSegmentIndex = 0; // Track selected index
+
+  Duration get selectedSegmentDuration => segmentDurations[selectedSegmentIndex]['duration'];
 
   void trimVideo() async {
     requestStoragePermission(); // Request storage permission
@@ -41,7 +43,7 @@ class AppCubit extends Cubit<AppStates> {
       emit(AppTrimmingLoadingState());
 
       if (totalVideoDuration.inSeconds > 0) {
-        final segmentDuration = Duration(minutes: _selectedSegmentDuration);
+        final segmentDuration = selectedSegmentDuration;
         int segmentIndex = 0;
         bool isSuccess = true; // Track if all segments are trimmed successfully
 
@@ -105,11 +107,9 @@ class AppCubit extends Cubit<AppStates> {
     // Listen to media sharing while the app is in memory
     _intentDataStreamSubscription =
         ReceiveSharingIntent.instance.getMediaStream().listen((value) {
-      print('77777777777777777');
       _sharedFiles.clear();
       _sharedFiles.addAll(value);
       if (_sharedFiles.isNotEmpty) {
-        print('4444444444444444444444444');
         sharedVideoPath.text = _sharedFiles.first.path;
         print(sharedVideoPath.text);
         fetchVideoDuration(sharedVideoPath.text);
@@ -121,13 +121,10 @@ class AppCubit extends Cubit<AppStates> {
 
     // Retrieve initial shared media when the app is launched from a sharing intent
     ReceiveSharingIntent.instance.getInitialMedia().then((value) {
-      print('55555555555555555555555555555');
       _sharedFiles.clear();
       _sharedFiles.addAll(value);
       if (_sharedFiles.isNotEmpty) {
-        print('4444444444444444444444444');
         sharedVideoPath.text = _sharedFiles.first.path;
-        print(sharedVideoPath.text);
         fetchVideoDuration(sharedVideoPath.text);
       }
       ReceiveSharingIntent.instance.reset(); // Reset sharing intent
@@ -157,6 +154,12 @@ class AppCubit extends Cubit<AppStates> {
       emit(AppErrorState());
       print("File does not exist at path: $videoPath");
     }
+  }
+
+  void changeDropdownSelection(int index){
+    selectedSegmentIndex = index;
+    emit(AppChangeDropdownState());
+
   }
 
   @override

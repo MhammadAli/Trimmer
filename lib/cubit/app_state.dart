@@ -11,3 +11,4 @@ final class AppFetchDurationState extends AppStates{}
 final class AppTrimmingLoadingState extends AppStates{}
 final class AppTrimmingSuccessState extends AppStates{}
 final class AppTrimmingErrorState extends AppStates{}
+final class AppChangeDropdownState extends AppStates{}
