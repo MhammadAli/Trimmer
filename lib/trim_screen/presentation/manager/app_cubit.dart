@@ -1,12 +1,14 @@
 import 'dart:async';
-import 'package:permission_handler/permission_handler.dart';
 import 'dart:io'; // Import for File and Directory checks
-import 'package:flutter/material.dart';
+
 import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
+import 'package:trim/trim_screen/presentation/widgets/snackbar_successful_trimming.dart';
 
 part 'app_state.dart';
 
@@ -22,16 +24,42 @@ class AppCubit extends Cubit<AppStates> {
 
   // Dropdown data structure with platform icons and durations
   final List<Map<String, dynamic>> segmentDurations = [
-    {'name': 'WhatsApp', 'icon': FontAwesomeIcons.whatsapp, 'duration': const Duration(minutes: 1)},
-    {'name': 'Messenger', 'icon': FontAwesomeIcons.facebookMessenger, 'duration': const Duration(seconds: 20)},
-    {'name': 'YouTube', 'icon': FontAwesomeIcons.youtube, 'duration': const Duration(minutes: 3)},
-    {'name': 'TikTok', 'icon': FontAwesomeIcons.tiktok, 'duration': const Duration(minutes: 10)},
-    {'name': 'Custom', 'icon': Icons.settings, 'duration': const Duration(minutes: 2)}, // Default custom duration
+    {
+      'name': 'WhatsApp',
+      'icon': FontAwesomeIcons.whatsapp,
+      'duration': const Duration(minutes: 1)
+    },
+    {
+      'name': 'Messenger',
+      'icon': FontAwesomeIcons.facebookMessenger,
+      'duration': const Duration(seconds: 20)
+    },
+    {
+      'name': 'YouTube',
+      'icon': FontAwesomeIcons.youtube,
+      'duration': const Duration(minutes: 3)
+    },
+    {
+      'name': 'TikTok',
+      'icon': FontAwesomeIcons.tiktok,
+      'duration': const Duration(minutes: 10)
+    },
+    {
+      'name': 'Telegram',
+      'icon': FontAwesomeIcons.telegram,
+      'duration': const Duration(minutes: 1)
+    }, // Default custom duration
   ];
 
   int selectedSegmentIndex = 0; // Track selected index
+  int selectedCustomSegmentIndex = 0;
+  bool isCustom = false;
+  Duration customDuration = Duration.zero;
 
-  Duration get selectedSegmentDuration => segmentDurations[selectedSegmentIndex]['duration'];
+  Duration get selectedSegmentDuration =>(isCustom)
+      ? customDuration
+      : segmentDurations[selectedSegmentIndex]['duration'];
+
 
   void trimVideo() async {
     requestStoragePermission(); // Request storage permission
@@ -50,8 +78,8 @@ class AppCubit extends Cubit<AppStates> {
         List<Future<void>> trimTasks = [];
 
         for (int startMs = 0;
-        startMs < totalVideoDuration.inMilliseconds;
-        startMs += segmentDuration.inMilliseconds) {
+            startMs < totalVideoDuration.inMilliseconds;
+            startMs += segmentDuration.inMilliseconds) {
           final endMs = startMs + segmentDuration.inMilliseconds;
           final actualDurationMs = (endMs > totalVideoDuration.inMilliseconds)
               ? totalVideoDuration.inMilliseconds - startMs
@@ -66,7 +94,7 @@ class AppCubit extends Cubit<AppStates> {
           // Use FFmpegKit to execute the command
           FFmpegKit.executeAsync(
             '-i "${sharedVideoPath.text}" -ss ${startMs ~/ 1000} -t ${actualDurationMs / 1000} "$outputPath"',
-                (session) async {
+            (session) async {
               final returnCode = await session.getReturnCode();
               if (returnCode!.isValueSuccess()) {
                 print('Segment $segmentIndex trimmed and saved to $outputPath');
@@ -100,7 +128,6 @@ class AppCubit extends Cubit<AppStates> {
       print("Storage permission not granted.");
     }
   }
-
 
   void init() {
     emit(AppInitialState());
@@ -156,14 +183,28 @@ class AppCubit extends Cubit<AppStates> {
     }
   }
 
-  void changeDropdownSelection(int index){
+  void changeDropdownSelection(int index) {
     selectedSegmentIndex = index;
+    isCustom = false;
     emit(AppChangeDropdownState());
+  }
 
+  void changeDropdownCustomSelection(int index) {
+    selectedCustomSegmentIndex = index;
+    isCustom = true;
+    emit(AppChangeCustomDropdownState());
+  }
+
+  void setCustomDuration(int duration) {
+    isCustom = true;
+    customDuration = (selectedCustomSegmentIndex == 0)
+        ? Duration(minutes: duration)
+        : Duration(seconds: duration);
   }
 
   @override
-  Future<void> close() {  // to clean resources and it's equal to dispose function in stateful widget.
+  Future<void> close() {
+    // to clean resources and it's equal to dispose function in stateful widget.
     _intentDataStreamSubscription.cancel();
     return super.close();
   }

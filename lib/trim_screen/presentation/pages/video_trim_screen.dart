@@ -1,6 +1,9 @@
-import 'package:trim/cubit/app_cubit.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:trim/trim_screen/presentation/manager/app_cubit.dart';
+import 'package:trim/trim_screen/presentation/widgets/drop_down_button.dart';
+import 'package:trim/trim_screen/presentation/widgets/snackbar_successful_trimming.dart';
 
 class VideoTrimScreen extends StatelessWidget {
   const VideoTrimScreen({super.key});
@@ -8,7 +11,21 @@ class VideoTrimScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AppCubit, AppStates>(
-      listener: (context, state) {},
+      listener: (context, state) {
+        if (state is AppTrimmingSuccessState) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            showSnackBar(
+                color: Colors.green, message: 'Trimming done successfully!'),
+          );
+        }
+
+        if (state is AppTrimmingErrorState) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            showSnackBar(
+                color: Colors.red, message: 'Error occurred while trimming.'),
+          );
+        }
+      },
       builder: (context, state) {
         final cubit = AppCubit.get(context);
         return Scaffold(
@@ -22,7 +39,7 @@ class VideoTrimScreen extends StatelessWidget {
             child: Column(
               children: [
                 TextFormField(
-                  controller: AppCubit.get(context).sharedVideoPath,
+                  controller: cubit.sharedVideoPath,
                   readOnly: true,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.location_on),
@@ -54,38 +71,7 @@ class VideoTrimScreen extends StatelessWidget {
                 const SizedBox(
                   height: 20,
                 ),
-                Row(
-                  children: [
-                    const Text(
-                      'Duration of segment',
-                      style:
-                          TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    DropdownButton<int>(
-                      value: cubit.selectedSegmentIndex,
-                      items: List.generate(
-                          cubit.segmentDurations.length,
-                          (index) => DropdownMenuItem(
-                                value: index,
-                                child: Row(
-                                  children: [
-                                    Icon(cubit.segmentDurations[index]['icon']),
-                                    const SizedBox(
-                                      width: 8,
-                                    ),
-                                    Text(cubit.segmentDurations[index]['name'])
-                                  ],
-                                ),
-                              )),
-                      onChanged: (value) {
-                        cubit.changeDropdownSelection(value!);
-                      },
-                    ),
-                  ],
-                ),
+                dropdownButton(context, cubit),
               ],
             ),
           ),

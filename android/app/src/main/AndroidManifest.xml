@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
 
     <application
-        android:label="trimmer"
+        android:label="Trimmer"
         android:name="${applicationName}"
         android:icon="@mipmap/trimmer_icons">
         <activity
