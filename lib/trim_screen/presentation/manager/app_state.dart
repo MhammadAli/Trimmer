@@ -13,3 +13,6 @@ final class AppTrimmingSuccessState extends AppStates{}
 final class AppTrimmingErrorState extends AppStates{}
 final class AppChangeDropdownState extends AppStates{}
 final class AppChangeCustomDropdownState extends AppStates{}
+final class AppBrowseLoadingState extends AppStates{}
+final class AppBrowseSuccessState extends AppStates{}
+final class AppBrowseErrorState extends AppStates{}

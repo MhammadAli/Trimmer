@@ -1,7 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trim/trim_screen/presentation/manager/app_cubit.dart';
+import 'package:trim/trim_screen/presentation/widgets/custom_button.dart';
 import 'package:trim/trim_screen/presentation/widgets/drop_down_button.dart';
 import 'package:trim/trim_screen/presentation/widgets/snackbar_successful_trimming.dart';
 
@@ -50,23 +50,26 @@ class VideoTrimScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-                OutlinedButton(
+                showButton(
+                  text: 'Trim',
                   onPressed: (state is AppTrimmingLoadingState)
                       ? null
                       : () {
                           cubit.trimVideo();
                         },
-                  style: OutlinedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(150, 50),
-                    textStyle: const TextStyle(fontSize: 30),
-                  ),
-                  child: (state is AppTrimmingLoadingState)
-                      ? const CircularProgressIndicator(
-                          color: Colors.white,
-                        )
-                      : const Text('Trim'),
+                  isTrim: true,
+                  state: state,
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                showButton(
+                  text: 'Browse',
+                  onPressed: (){
+                    cubit.pickVideo();
+
+                  },
+                  isTrim: false,
                 ),
                 const SizedBox(
                   height: 20,

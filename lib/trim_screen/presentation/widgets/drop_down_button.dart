@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:trim/trim_screen/presentation/widgets/custom_duration_dropdown.dart';
 
-Widget dropdownButton(BuildContext context, cubit) =>
+Row dropdownButton(BuildContext context, cubit) =>
     Row(
       children: [
         const Text(

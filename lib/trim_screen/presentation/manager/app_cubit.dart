@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io'; // Import for File and Directory checks
-
 import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
-import 'package:trim/trim_screen/presentation/widgets/snackbar_successful_trimming.dart';
+import 'package:flutter_document_picker/flutter_document_picker.dart';
 
 part 'app_state.dart';
 
@@ -56,10 +55,9 @@ class AppCubit extends Cubit<AppStates> {
   bool isCustom = false;
   Duration customDuration = Duration.zero;
 
-  Duration get selectedSegmentDuration =>(isCustom)
+  Duration get selectedSegmentDuration => (isCustom)
       ? customDuration
       : segmentDurations[selectedSegmentIndex]['duration'];
-
 
   void trimVideo() async {
     requestStoragePermission(); // Request storage permission
@@ -200,6 +198,24 @@ class AppCubit extends Cubit<AppStates> {
     customDuration = (selectedCustomSegmentIndex == 0)
         ? Duration(minutes: duration)
         : Duration(seconds: duration);
+  }
+
+  void pickVideo() async {
+    emit(AppBrowseLoadingState());
+    final path = await FlutterDocumentPicker.openDocument(
+      params: FlutterDocumentPickerParams(
+        allowedMimeTypes: ['video/*'],
+      ),
+    );
+
+    if (path != null) {
+      sharedVideoPath.text = path;
+      fetchVideoDuration(path);
+      emit(AppBrowseSuccessState());
+    } else {
+      emit(AppBrowseErrorState());
+      print("No video selected");
+    }
   }
 
   @override
