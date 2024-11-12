@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:trim/trim_screen/presentation/widgets/custom_duration_dropdown.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 Row dropdownButton(BuildContext context, cubit) =>
     Row(
       children: [
-        const Text(
+         Text(
           'Choose the platform',
           style:
-          TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+          TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(
-          width: 10,
+         SizedBox(
+          width: 10.w,
         ),
         DropdownButton<int>(
           value: cubit.selectedSegmentIndex,
@@ -22,8 +23,8 @@ Row dropdownButton(BuildContext context, cubit) =>
                     child: Row(
                       children: [
                         Icon(cubit.segmentDurations[index]['icon']),
-                        const SizedBox(
-                          width: 8,
+                         SizedBox(
+                          width: 8.w,
                         ),
                         Text(cubit.segmentDurations[index]['name'])
                       ],

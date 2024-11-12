@@ -8,6 +8,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:flutter_document_picker/flutter_document_picker.dart';
+import 'package:path/path.dart';
 
 part 'app_state.dart';
 
@@ -20,6 +21,7 @@ class AppCubit extends Cubit<AppStates> {
   late StreamSubscription _intentDataStreamSubscription;
   final List<SharedMediaFile> _sharedFiles = [];
   Duration totalVideoDuration = Duration.zero;
+  TextEditingController videoName = TextEditingController();
 
   // Dropdown data structure with platform icons and durations
   final List<Map<String, dynamic>> segmentDurations = [
@@ -60,7 +62,7 @@ class AppCubit extends Cubit<AppStates> {
       : segmentDurations[selectedSegmentIndex]['duration'];
 
   void trimVideo() async {
-    requestStoragePermission(); // Request storage permission
+    await requestStoragePermission(); // Request storage permission
     if (await Permission.storage.isGranted) {
       final directory = Directory('/storage/emulated/0/Trimmer');
       if (!await directory.exists()) {
@@ -84,7 +86,7 @@ class AppCubit extends Cubit<AppStates> {
               : segmentDuration.inMilliseconds;
 
           String outputPath =
-              '${directory.path}/trimmed_video_$segmentIndex.mp4';
+              '${directory.path}/${videoName}_$segmentIndex.mp4';
 
           // Create a completer to handle the asynchronous callback
           Completer<void> completer = Completer<void>();
@@ -118,11 +120,11 @@ class AppCubit extends Cubit<AppStates> {
           emit(AppTrimmingErrorState());
         }
       } else {
-        emit(AppTrimmingErrorState());
+        emit(AppFetchDurationErrorState());
         print("No valid video duration found to trim.");
       }
     } else {
-      emit(AppTrimmingErrorState());
+      emit(AppGettingPermissionErrorState());
       print("Storage permission not granted.");
     }
   }
@@ -157,6 +159,7 @@ class AppCubit extends Cubit<AppStates> {
   }
 
   Future<void> requestStoragePermission() async {
+    emit(AppGettingPermissionState());
     if (!await Permission.storage.isGranted) {
       await Permission.storage.request();
     }
@@ -169,6 +172,7 @@ class AppCubit extends Cubit<AppStates> {
         final information = session.getMediaInformation();
         if (information != null) {
           final duration = information.getDuration();
+          videoName.text = basename(information.getFilename()!);
           if (duration != null) {
             totalVideoDuration =
                 Duration(milliseconds: (double.parse(duration) * 1000).toInt());

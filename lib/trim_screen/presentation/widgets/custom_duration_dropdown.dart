@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 // Method to show a dialog for custom duration input
 Future showCustomDurationDialog(BuildContext context,cubit) {
@@ -21,7 +22,7 @@ Future showCustomDurationDialog(BuildContext context,cubit) {
                   customValue = int.tryParse(value) ?? 1;
                 },
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10.h),
               // Dropdown for unit selection (minutes or seconds)
               DropdownButton<int>(
                 value: cubit.selectedCustomSegmentIndex,

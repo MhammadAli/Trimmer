@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:trim/main.dart';
 import 'package:trim/trim_screen/presentation/manager/app_cubit.dart';
 import 'package:trim/trim_screen/presentation/widgets/custom_button.dart';
 import 'package:trim/trim_screen/presentation/widgets/drop_down_button.dart';
 import 'package:trim/trim_screen/presentation/widgets/snackbar_successful_trimming.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class VideoTrimScreen extends StatelessWidget {
   const VideoTrimScreen({super.key});
@@ -25,6 +27,14 @@ class VideoTrimScreen extends StatelessWidget {
                 color: Colors.red, message: 'Error occurred while trimming.'),
           );
         }
+
+        if (state is AppGettingPermissionErrorState) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            showSnackBar(
+                color: Colors.red,
+                message: 'Storage Permission is necessary for the app'),
+          );
+        }
       },
       builder: (context, state) {
         final cubit = AppCubit.get(context);
@@ -35,21 +45,21 @@ class VideoTrimScreen extends StatelessWidget {
             leading: const Icon(Icons.cut),
           ),
           body: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: EdgeInsets.all(20.0.w),
             child: Column(
               children: [
                 TextFormField(
-                  controller: cubit.sharedVideoPath,
+                  controller: cubit.videoName,
                   readOnly: true,
                   decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.location_on),
-                    labelText: 'Video Path',
+                    prefixIcon: const Icon(Icons.person),
+                    labelText: 'Video Name',
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(20.r),
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20.h),
                 showButton(
                   text: 'Trim',
                   onPressed: (state is AppTrimmingLoadingState)
@@ -60,19 +70,18 @@ class VideoTrimScreen extends StatelessWidget {
                   isTrim: true,
                   state: state,
                 ),
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                  height: 20.h,
                 ),
                 showButton(
                   text: 'Browse',
-                  onPressed: (){
+                  onPressed: () {
                     cubit.pickVideo();
-
                   },
                   isTrim: false,
                 ),
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                  height: 20.h,
                 ),
                 dropdownButton(context, cubit),
               ],
