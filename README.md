@@ -24,3 +24,7 @@ The Video Trimmer App is a feature-rich Flutter application that lets you effici
 - **[ffmpeg_kit_flutter](https://pub.dev/packages/ffmpeg_kit_flutter)**: For video processing and trimming.
 - **[permission_handler](https://pub.dev/packages/permission_handler)**: To request and handle storage permissions.
 - **[ffprobe_kit_flutter](https://pub.dev/packages/ffprobe_kit_flutter)**: To fetch video metadata, such as duration and filename.
+
+---
+
+![App Demo](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExbG4yb2hiMXlrYjkwaDE2em9sY3JjMTk2Y2V4djVhZ2ZsODA0MGF0eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/BO10wOZNfyIU5Wl8SU/giphy.webp)
