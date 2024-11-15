@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trim/main.dart';
 import 'package:trim/trim_screen/presentation/manager/app_cubit.dart';
 import 'package:trim/trim_screen/presentation/widgets/custom_button.dart';
 import 'package:trim/trim_screen/presentation/widgets/drop_down_button.dart';
