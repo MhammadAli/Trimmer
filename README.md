@@ -1,6 +1,6 @@
-# Video Trimmer App
+# TrimXpert App
 
-The Video Trimmer App is a feature-rich Flutter application that lets you efficiently trim, split, and manage video files. With support for custom segment durations, share intents, and platform-specific options, this app offers an intuitive and seamless video editing experience.
+The TrimXpert App is a feature-rich Flutter application that lets you efficiently trim, split, and manage video files. With support for custom segment durations, share intents, and platform-specific options, this app offers an intuitive and seamless video editing experience.
 
 ---
 
